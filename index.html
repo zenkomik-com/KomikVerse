@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="RbN-FLriXYhqWVXu9fc7Cqe02r9-6VbuTGTBVhQZejU" />
+    <title>ZENKOMIK+ | Platform Komik Mustofa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #ffffff; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .hidden { display: none !important; }
+        .nav-fixed { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #f1f5f9; z-index: 50; max-width: 448px; left: 50%; transform: translateX(-50%); padding-bottom: env(safe-area-inset-bottom); }
+        .active-nav { color: #2563eb; }
+        .manga-card { transition: 0.2s; border-radius: 12px; overflow: hidden; border: 1px solid #f3f4f6; }
+        .tab-active { color: #2563eb; border-bottom: 3px solid #2563eb; }
+        ::-webkit-scrollbar { width: 0px; }
+        .reader-img { width: 100%; display: block; }
+        .ad-wrapper { max-width: 100%; max-height: 250px; overflow: hidden; margin: 10px 0; display: flex; justify-content: center; background: #f8fafc; border-radius: 12px; border: 1px dashed #e2e8f0; }
+    </style>
+</head>
+<body class="max-w-md mx-auto bg-white min-h-screen pb-24 shadow-2xl relative">
+
+    <header id="main-header" class="p-4 flex justify-between items-center sticky top-0 bg-white/90 backdrop-blur-md z-40 border-b">
+        <h1 class="text-xl font-black text-slate-900 tracking-tighter cursor-pointer" onclick="showPage('home')">ZEN<span class="text-blue-600">KOMIK+</span></h1>
+        <div class="flex gap-4 text-slate-600">
+            <i class="fa fa-search text-lg cursor-pointer" onclick="toggleSearch()"></i>
+            <div class="relative cursor-pointer" onclick="alert('Update: Fitur Hapus Pesan Admin Aktif!')">
+                <i class="fa-regular fa-bell text-lg"></i>
+                <span class="absolute -top-1 -right-1 bg-red-500 w-2 h-2 rounded-full"></span>
+            </div>
+        </div>
+    </header>
+
+    <div id="search-container" class="hidden p-4 bg-white sticky top-[61px] z-40 border-b">
+        <input type="text" id="search-input" oninput="doSearch()" placeholder="Cari judul komik..." class="w-full p-3 bg-slate-100 rounded-xl outline-none text-sm border focus:border-blue-400">
+    </div>
+
+    <main>
+        <div id="page-home" class="px-4 pt-4">
+            <div class="ad-wrapper">
+                <script async="async" data-cfasync="false" src="https://pl29049899.profitablecpmratenetwork.com/b16ed9d1b2421ca27471a35dd8078986/invoke.js"></script>
+                <div id="container-b16ed9d1b2421ca27471a35dd8078986"></div>
+            </div>
+            <div id="home-content">
+                <h2 class="font-black text-slate-400 mb-4 uppercase text-[10px] tracking-widest">Update Terbaru</h2>
+                <div id="manga-list" class="grid grid-cols-2 gap-4"></div>
+            </div>
+            <div id="search-results" class="hidden grid grid-cols-2 gap-4"></div>
+        </div>
+
+        <div id="page-terbaru" class="hidden">
+            <div class="flex border-b sticky top-[61px] bg-white z-30">
+                <button onclick="filterType('Semua')" class="flex-1 py-4 text-xs font-bold tab-active t-btn" id="t-semua">Semua</button>
+                <button onclick="filterType('Manga')" class="flex-1 py-4 text-xs font-bold text-slate-400 t-btn" id="t-manga">Manga</button>
+                <button onclick="filterType('Manhua')" class="flex-1 py-4 text-xs font-bold text-slate-400 t-btn" id="t-manhua">Manhua</button>
+                <button onclick="filterType('Manhwa')" class="flex-1 py-4 text-xs font-bold text-slate-400 t-btn" id="t-manhwa">Manhwa</button>
+            </div>
+            <div id="terbaru-list" class="p-4 space-y-4"></div>
+        </div>
+
+        <div id="page-rak" class="hidden p-4">
+            <h2 class="text-xl font-black mb-6">Rak Buku</h2>
+            <div id="rak-list" class="grid grid-cols-2 gap-4"></div>
+            <div id="rak-empty" class="py-20 text-center text-slate-300 hidden">
+                <i class="fa fa-bookmark text-5xl mb-4"></i>
+                <p class="text-sm">Belum ada komik favorit.</p>
+            </div>
+        </div>
+
+        <div id="page-komunitas" class="hidden flex flex-col h-[78vh]">
+            <div id="chat-box" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50"></div>
+            <div id="comm-input-area" class="p-4 border-t bg-white"></div>
+        </div>
+
+        <div id="page-detail" class="hidden">
+            <div id="detail-content"></div>
+        </div>
+
+        <div id="page-reader" class="hidden bg-black min-h-screen">
+            <div id="reader-images" class="flex flex-col"></div>
+            <button onclick="showPage('detail')" class="fixed top-4 left-4 bg-black/40 p-3 rounded-full text-white z-50"><i class="fa fa-arrow-left"></i></button>
+        </div>
+
+        <div id="page-profile" class="hidden p-6">
+            <div id="profile-ui"></div>
+        </div>
+
+        <div id="page-auth" class="hidden p-8 pt-16 text-center">
+            <h2 id="auth-title" class="text-3xl font-black mb-10 text-blue-600 uppercase tracking-tighter">ZENKOMIK+</h2>
+            <div class="space-y-4">
+                <input type="text" id="auth-user" placeholder="Username" class="w-full p-4 rounded-2xl bg-slate-50 border outline-none">
+                <input type="password" id="auth-pass" placeholder="Password" class="w-full p-4 rounded-2xl bg-slate-50 border outline-none">
+                <button onclick="handleAuth()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg">MASUK</button>
+                <button onclick="toggleAuth()" id="toggle-txt" class="text-sm font-bold text-blue-600">Belum punya akun? Daftar</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal-cms" class="fixed inset-0 bg-black/50 z-[100] flex items-end hidden">
+        <div class="bg-white w-full rounded-t-3xl p-6 h-[85vh] overflow-y-auto">
+            <div class="flex justify-between mb-6">
+                <h2 id="cms-title" class="text-xl font-black uppercase">Posting Komik</h2>
+                <i class="fa fa-times text-slate-400" onclick="document.getElementById('modal-cms').classList.add('hidden')"></i>
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="m-title" placeholder="Judul Komik" class="w-full p-4 bg-slate-50 rounded-xl border outline-none">
+                <select id="m-type" class="w-full p-4 bg-slate-50 rounded-xl border outline-none font-bold">
+                    <option value="Manhwa">Manhwa</option><option value="Manga">Manga</option><option value="Manhua">Manhua</option>
+                </select>
+                <textarea id="m-desc" placeholder="Sinopsis..." class="w-full p-4 bg-slate-50 rounded-xl border h-32 outline-none"></textarea>
+                <div class="p-4 border rounded-xl bg-slate-50">
+                    <p class="text-[10px] text-slate-400 mb-2">Pilih Cover Komik:</p>
+                    <input type="file" id="m-file" class="w-full text-xs">
+                </div>
+                <button id="btn-save-manga" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase shadow-lg shadow-blue-100">Simpan Data</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-chapter" class="fixed inset-0 bg-black/50 z-[100] flex items-end hidden">
+        <div class="bg-white w-full rounded-t-3xl p-6 h-[65vh] overflow-y-auto">
+            <h2 class="text-xl font-black mb-6 uppercase">Tambah Chapter</h2>
+            <div class="space-y-4">
+                <input type="number" id="ch-num" placeholder="Nomor Chapter" class="w-full p-4 bg-slate-50 rounded-xl border outline-none font-bold">
+                <div class="border-2 border-dashed p-10 rounded-2xl text-center bg-slate-50 relative">
+                    <input type="file" id="ch-files" multiple class="absolute inset-0 opacity-0 cursor-pointer" onchange="updateFileStatus(this)">
+                    <i class="fa fa-cloud-upload text-3xl text-blue-500 mb-2"></i>
+                    <p id="file-status" class="text-xs font-bold text-slate-400 uppercase">Pilih Gambar Panel</p>
+                </div>
+                <button id="btn-upload-ch" onclick="saveChapterFiles()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black">MULAI UPLOAD</button>
+                <button onclick="document.getElementById('modal-chapter').classList.add('hidden')" class="w-full py-2 text-slate-400 text-sm">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-edit-panels" class="fixed inset-0 bg-black/50 z-[100] flex items-end hidden">
+        <div class="bg-white w-full rounded-t-3xl p-6 h-[75vh] overflow-y-auto">
+            <h2 class="text-xl font-black mb-4 uppercase">Kelola Panel</h2>
+            <select id="sel-ch-edit" class="w-full p-4 bg-slate-50 rounded-xl border outline-none font-bold mb-4"></select>
+            <div class="border-2 border-dashed p-6 rounded-2xl text-center bg-blue-50 relative mb-4">
+                <input type="file" id="single-ch-file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="addOnePanel()">
+                <i class="fa fa-plus-circle text-2xl text-blue-500 mb-1"></i>
+                <p id="add-status" class="text-[10px] font-bold text-blue-600 uppercase">Tambah Panel Satuan</p>
+            </div>
+            <div id="current-panels-list" class="grid grid-cols-4 gap-2 py-4"></div>
+            <button onclick="document.getElementById('modal-edit-panels').classList.add('hidden')" class="w-full bg-slate-900 text-white py-4 rounded-xl font-black">TUTUP</button>
+        </div>
+    </div>
+
+    <nav id="bottom-nav" class="nav-fixed flex justify-around items-center p-3 shadow-inner">
+        <button onclick="showPage('home')" id="n-home" class="flex flex-col items-center gap-1 active-nav"><i class="fa-solid fa-house"></i><span class="text-[9px] font-bold">Home</span></button>
+        <button onclick="showPage('terbaru')" id="n-terbaru" class="flex flex-col items-center gap-1 text-slate-400"><i class="fa-solid fa-compass"></i><span class="text-[9px] font-bold">Terbaru</span></button>
+        <button onclick="showPage('rak')" id="n-rak" class="flex flex-col items-center gap-1 text-slate-400"><i class="fa-solid fa-bookmark"></i><span class="text-[9px] font-bold">Rak</span></button>
+        <button onclick="showPage('komunitas')" id="n-komunitas" class="flex flex-col items-center gap-1 text-slate-400"><i class="fa-solid fa-comments"></i><span class="text-[9px] font-bold">Forum</span></button>
+        <button onclick="showPage('profile')" id="n-profile" class="flex flex-col items-center gap-1 text-slate-400"><i class="fa-solid fa-user"></i><span class="text-[9px] font-bold">Akun</span></button>
+    </nav>
+
+    <div id="modal-ads" class="fixed inset-0 bg-black/90 z-[200] flex items-center justify-center hidden p-6">
+        <div class="bg-white rounded-3xl overflow-hidden relative w-full max-w-xs">
+            <div class="p-2 bg-slate-100 text-[8px] text-center font-bold text-slate-400 uppercase">Sponsor Zenkomik+</div>
+            <div class="bg-slate-200 aspect-[3/4] flex items-center justify-center">
+                 <img src="https://via.placeholder.com/300x400?text=ADS+HERE" class="w-full h-full object-cover">
+            </div>
+            <div class="p-4">
+                <h4 class="font-black text-sm mb-1 uppercase">Dukung Zenkomik+</h4>
+                <p class="text-[10px] text-slate-500 mb-4 leading-relaxed">Donasi lewat Saweria agar server tetap jalan!</p>
+                <div class="flex gap-2">
+                    <button onclick="document.getElementById('modal-ads').classList.add('hidden')" class="flex-1 bg-slate-100 text-slate-400 py-3 rounded-xl font-black text-[10px]">TUTUP</button>
+                    <a href="https://saweria.co/KomikVersee" target="_blank" class="flex-[2] bg-blue-600 text-white py-3 rounded-xl font-black text-[10px] text-center">SAWERIA</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDtPF6ofD2snuRdIO30h2AVYrMjsV3lYDc",
+            authDomain: "mangaku-1c3ac.firebaseapp.com",
+            databaseURL: "https://mangaku-1c3ac-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "mangaku-1c3ac",
+            storageBucket: "mangaku-1c3ac.firebasestorage.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let allManga = [];
+        let currentEditKey = null;
+        let isLoginMode = true;
+        let chapterReadCount = 0;
+        const badWords = ["anjing", "babi", "bangsat", "tolol", "goblok", "kontol", "memek", "asuh"];
+
+        // UI Helpers
+        function showPage(p) {
+            ['home', 'terbaru', 'rak', 'komunitas', 'profile', 'detail', 'auth', 'reader'].forEach(id => {
+                const el = document.getElementById('page-'+id);
+                if(el) el.classList.add('hidden');
+                const nav = document.getElementById('n-'+id);
+                if(nav) nav.classList.remove('active-nav', 'text-slate-400');
+            });
+            document.getElementById('page-'+p).classList.remove('hidden');
+            const navBtn = document.getElementById('n-'+p);
+            if(navBtn) navBtn.classList.add('active-nav');
+            
+            const header = document.getElementById('main-header');
+            if(p === 'detail' || p === 'reader' || p === 'auth') header.classList.add('hidden');
+            else header.classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function toggleSearch() { document.getElementById('search-container').classList.toggle('hidden'); }
+        function updateFileStatus(input) { document.getElementById('file-status').innerText = input.files.length + " Gambar Terpilih"; }
+
+        // Logic Manga & Database
+        db.ref('manga/').on('value', s => {
+            const list = document.getElementById('manga-list');
+            list.innerHTML = ""; allManga = [];
+            s.forEach(child => {
+                const m = child.val(); m.key = child.key;
+                allManga.push(m);
+                list.innerHTML += `
+                    <div class="manga-card" onclick="openDetail('${m.key}')">
+                        <img src="${m.cover}" class="w-full h-56 object-cover bg-slate-100">
+                        <div class="p-2">
+                            <h3 class="font-bold text-[11px] truncate uppercase">${m.title}</h3>
+                            <p class="text-[10px] text-slate-400 mt-1">${m.type} • ★ 9.5</p>
+                        </div>
+                    </div>`;
+            });
+            renderRak();
+            filterType('Semua');
+        });
+
+        function filterType(type) {
+            const list = document.getElementById('terbaru-list');
+            list.innerHTML = "";
+            document.querySelectorAll('.t-btn').forEach(b => b.classList.replace('tab-active', 'text-slate-400'));
+            const activeBtn = document.getElementById('t-' + type.toLowerCase());
+            if(activeBtn) activeBtn.classList.replace('text-slate-400', 'tab-active');
+            
+            const filtered = type === 'Semua' ? allManga : allManga.filter(m => m.type === type);
+            filtered.forEach(m => {
+                list.innerHTML += `<div class="flex gap-4 items-center bg-slate-50 p-3 rounded-2xl" onclick="openDetail('${m.key}')">
+                    <img src="${m.cover}" class="w-16 h-24 object-cover rounded-xl shadow-sm">
+                    <div class="flex-1">
+                        <h3 class="font-bold text-sm uppercase">${m.title}</h3>
+                        <p class="text-[10px] text-slate-400 mt-1">${m.type} • Action • Ongoing</p>
+                    </div>
+                    <i class="fa fa-chevron-right text-slate-200 pr-2"></i>
+                </div>`;
+            });
+        }
+
+        function openDetail(key) {
+            const m = allManga.find(x => x.key === key);
+            const isAdmin = localStorage.getItem('role') === 'Owner';
+            const isBookmarked = JSON.parse(localStorage.getItem('bookmarks') || "[]").includes(key);
+            showPage('detail');
+            
+            db.ref('chapters/'+key).on('value', s => {
+                let chItems = "";
+                s.forEach(ch => {
+                    chItems += `<div class="p-4 border-b flex justify-between items-center bg-white active:bg-slate-50" onclick="readChapter('${key}','${ch.key}')">
+                        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 font-bold text-[10px]">${ch.key}</div>
+                        <span class="text-xs font-bold">Chapter ${ch.key}</span></div>
+                        <i class="fa fa-play text-slate-200 text-xs"></i>
+                    </div>`;
+                });
+                document.getElementById('detail-content').innerHTML = `
+                    <div class="relative">
+                        <img src="${m.cover}" class="w-full h-80 object-cover brightness-50">
+                        <button onclick="showPage('home')" class="absolute top-4 left-4 text-white bg-black/20 p-3 rounded-full"><i class="fa fa-arrow-left"></i></button>
+                        <button onclick="toggleBookmark('${m.key}')" class="absolute top-4 right-4 text-white text-xl p-3">
+                            <i class="${isBookmarked ? 'fa-solid text-blue-400' : 'fa-regular'} fa-bookmark"></i>
+                        </button>
+                        <div class="absolute bottom-6 left-6 right-6 text-white">
+                            <h2 class="text-2xl font-black uppercase tracking-tighter">${m.title}</h2>
+                            <p class="text-xs opacity-70 font-bold uppercase">${m.type} • Mustofa Exclusive</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        ${isAdmin ? `<div class="grid grid-cols-3 gap-2 mb-6">
+                            <button onclick="openEditModal('${key}')" class="bg-amber-500 text-white py-3 rounded-xl text-[9px] font-black">EDIT INFO</button>
+                            <button onclick="openAddChModal('${key}')" class="bg-blue-600 text-white py-3 rounded-xl text-[9px] font-black">+ CHAPTER</button>
+                            <button onclick="openPanelManager('${key}')" class="bg-slate-900 text-white py-3 rounded-xl text-[9px] font-black">KELOLA PANEL</button>
+                        </div>` : ''}
+                        <h3 class="font-black text-[10px] text-slate-400 mb-2 uppercase tracking-widest">Sinopsis</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-8">${m.desc || 'Belum ada sinopsis.'}</p>
+                        <h3 class="font-black text-slate-800 mb-4 border-b pb-2 uppercase text-xs">Daftar Chapter</h3>
+                        <div class="rounded-2xl border overflow-hidden">${chItems || '<p class="p-8 text-center text-xs text-slate-300 italic">Segera Hadir...</p>'}</div>
+                    </div>`;
+            });
+        }
+
+        // Admin Functions
+        async function saveManga(isUpdate) {
+            const btn = document.getElementById('btn-save-manga');
+            btn.disabled = true; btn.innerText = "UPLOADING...";
+            const file = document.getElementById('m-file').files[0];
+            let coverUrl = isUpdate ? allManga.find(x => x.key === currentEditKey).cover : "";
+            
+            if(file) {
+                const form = new FormData(); form.append('file', file); form.append('upload_preset', "komikNest");
+                const res = await fetch(`https://api.cloudinary.com/v1_1/denbqcfi5/image/upload`, { method: 'POST', body: form });
+                const cloud = await res.json(); coverUrl = cloud.secure_url;
+            }
+            
+            const data = {
+                title: document.getElementById('m-title').value,
+                type: document.getElementById('m-type').value,
+                desc: document.getElementById('m-desc').value,
+                cover: coverUrl, time: Date.now()
+            };
+            
+            if(isUpdate) await db.ref('manga/'+currentEditKey).update(data);
+            else await db.ref('manga/').push(data);
+            
+            document.getElementById('modal-cms').classList.add('hidden');
+            btn.disabled = false; btn.innerText = "SIMPAN PERUBAHAN";
+            alert("Selesai!");
+        }
+
+        function openEditModal(key) {
+            currentEditKey = key; const m = allManga.find(x => x.key === key);
+            document.getElementById('m-title').value = m.title;
+            document.getElementById('m-type').value = m.type;
+            document.getElementById('m-desc').value = m.desc;
+            document.getElementById('cms-title').innerText = "Update Detail Komik";
+            document.getElementById('modal-cms').classList.remove('hidden');
+            document.getElementById('btn-save-manga').onclick = () => saveManga(true);
+        }
+
+        function openAddChModal(key) { currentEditKey = key; document.getElementById('modal-chapter').classList.remove('hidden'); }
+
+        async function saveChapterFiles() {
+            const files = document.getElementById('ch-files').files;
+            const num = document.getElementById('ch-num').value;
+            const btn = document.getElementById('btn-upload-ch');
+            if(!num || files.length === 0) return alert("Nomor Chapter & Panel Wajib Ada!");
+            
+            btn.disabled = true; let panelUrls = [];
+            for(let i=0; i<files.length; i++) {
+                btn.innerText = `UPLOADING ${i+1}/${files.length}`;
+                const form = new FormData(); form.append('file', files[i]); form.append('upload_preset', "komikNest");
+                const res = await fetch(`https://api.cloudinary.com/v1_1/denbqcfi5/image/upload`, { method: 'POST', body: form });
+                const cloud = await res.json(); panelUrls.push(cloud.secure_url);
+            }
+            await db.ref(`chapters/${currentEditKey}/${num}`).set({ num, images: panelUrls });
+            btn.disabled = false; btn.innerText = "MULAI UPLOAD";
+            document.getElementById('modal-chapter').classList.add('hidden');
+            alert("Chapter Berhasil Rilis!");
+        }
+
+        // Community & Forum
+        async function sendChat() {
+            const user = localStorage.getItem('user');
+            const msgInput = document.getElementById('chat-msg');
+            const msg = msgInput.value.trim();
+            if(!msg) return;
+            
+            let cleanMsg = msg;
+            badWords.forEach(w => { cleanMsg = cleanMsg.replace(new RegExp(w, 'gi'), '***'); });
+            
+            await db.ref('community/').push({
+                user, msg: cleanMsg,
+                tagManga: document.getElementById('chat-tag-manga').value || "",
+                tagCh: document.getElementById('chat-tag-ch').value || "",
+                time: Date.now()
+            });
+            msgInput.value = "";
+        }
+
+        function deleteMessage(key) {
+            if(confirm("Hapus pesan ini, Boss?")) db.ref('community/'+key).remove();
+        }
+
+        db.ref('community/').limitToLast(30).on('value', s => {
+            const box = document.getElementById('chat-box'); box.innerHTML = "";
+            const currentRole = localStorage.getItem('role');
+            s.forEach(c => {
+                const d = c.val(); const key = c.key;
+                const isOwnerMsg = d.user === 'mustofa';
+                box.innerHTML += `
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 ${isOwnerMsg ? 'bg-blue-600':'bg-white border'} rounded-full flex items-center justify-center font-bold ${isOwnerMsg?'text-white':'text-slate-400'} text-xs">
+                            ${d.user.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center pr-2">
+                                <p class="text-[9px] font-black uppercase ${isOwnerMsg?'text-blue-600':'text-slate-400'}">
+                                    ${d.user} ${d.tagManga ? `• <span class="text-slate-900">${d.tagManga} ${d.tagCh}</span>`:''}
+                                </p>
+                                ${currentRole === 'Owner' ? `<button onclick="deleteMessage('${key}')" class="text-[8px] text-red-500 font-bold uppercase">Hapus</button>` : ''}
+                            </div>
+                            <div class="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-100 shadow-sm mt-1 inline-block max-w-[90%]">
+                                <p class="text-xs text-slate-700 leading-relaxed">${d.msg}</p>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            box.scrollTop = box.scrollHeight;
+        });
+
+        // Auth & Profile
+        function toggleAuth() { isLoginMode = !isLoginMode; document.getElementById('auth-title').innerText = isLoginMode ? "ZENKOMIK+" : "GABUNG ZENKOMIK+"; }
+        async function handleAuth() {
+            const u = document.getElementById('auth-user').value.toLowerCase().trim();
+            const p = document.getElementById('auth-pass').value;
+            if(!u || !p) return alert("Username & Password wajib diisi!");
+            if(isLoginMode) {
+                db.ref('users/'+u).once('value', s => {
+                    if(s.exists() && s.val().password === p) {
+                        localStorage.setItem('user', u); localStorage.setItem('role', s.val().role || 'Member'); location.reload();
+                    } else alert("Username atau Password salah!");
+                });
+            } else {
+                const role = u === 'mustofa' ? 'Owner' : 'Member';
+                await db.ref('users/'+u).set({ password: p, role: role });
+                localStorage.setItem('user', u); localStorage.setItem('role', role); location.reload();
+            }
+        }
+
+        // Bookmark Logic
+        function renderRak() {
+            const b = JSON.parse(localStorage.getItem('bookmarks') || "[]");
+            const list = document.getElementById('rak-list');
+            list.innerHTML = "";
+            const filtered = allManga.filter(m => b.includes(m.key));
+            if(filtered.length === 0) document.getElementById('rak-empty').classList.remove('hidden');
+            else {
+                document.getElementById('rak-empty').classList.add('hidden');
+                filtered.forEach(m => {
+                    list.innerHTML += `<div class="manga-card" onclick="openDetail('${m.key}')">
+                        <img src="${m.cover}" class="w-full h-40 object-cover">
+                        <div class="p-2"><h3 class="font-bold text-[10px] truncate">${m.title}</h3></div>
+                    </div>`;
+                });
+            }
+        }
+
+        function toggleBookmark(key) {
+            let b = JSON.parse(localStorage.getItem('bookmarks') || "[]");
+            b = b.includes(key) ? b.filter(x => x !== key) : [...b, key];
+            localStorage.setItem('bookmarks', JSON.stringify(b));
+            openDetail(key); renderRak();
+        }
+
+        function readChapter(m, c) {
+            chapterReadCount++;
+            if (chapterReadCount % 4 === 0) document.getElementById('modal-ads').classList.remove('hidden');
+            db.ref(`chapters/${m}/${c}`).once('value', s => {
+                const container = document.getElementById('reader-images'); container.innerHTML = "";
+                s.val().images.forEach(img => container.innerHTML += `<img src="${img}" class="reader-img" loading="lazy">`);
+                showPage('reader');
+            });
+        }
+
+        window.onload = () => {
+            const user = localStorage.getItem('user');
+            const role = localStorage.getItem('role');
+            if(user) {
+                document.getElementById('profile-ui').innerHTML = `
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white text-3xl font-black">${user.charAt(0).toUpperCase()}</div>
+                        <div><h2 class="text-2xl font-black uppercase text-slate-800">${user}</h2><span class="text-[9px] bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-black uppercase">${role}</span></div>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-3xl mb-4 text-white shadow-xl shadow-blue-100">
+                        <h3 class="font-black text-sm mb-1 uppercase italic">Saweria Mustofa</h3>
+                        <p class="text-[10px] opacity-80 mb-4 leading-relaxed">Donasi membantu kami membayar server Firebase & Cloudinary!</p>
+                        <a href="https://saweria.co/KomikVersee" target="_blank" class="block w-full bg-white text-blue-600 text-center py-4 rounded-2xl font-black text-xs uppercase shadow-lg">DUKUNG KAMI SEKARANG</a>
+                    </div>
+                    ${role === 'Owner' ? `<button onclick="document.getElementById('cms-title').innerText='POSTING KOMIK BARU'; document.getElementById('modal-cms').classList.remove('hidden'); document.getElementById('btn-save-manga').onclick=()=>saveManga(false);" class="w-full bg-slate-900 text-white p-5 rounded-2xl font-black mb-4 uppercase text-xs tracking-widest shadow-lg">POSTING KOMIK BARU</button>` : ''}
+                    <button onclick="localStorage.clear(); location.reload();" class="w-full text-slate-300 font-black p-5 border-2 border-dashed rounded-2xl uppercase text-[10px]">KELUAR AKUN</button>
+                `;
+                document.getElementById('comm-input-area').innerHTML = `
+                    <div class="flex gap-2 mb-2">
+                        <input id="chat-tag-manga" placeholder="Sedang baca apa?" class="flex-1 text-[10px] p-2 bg-slate-50 border rounded-xl outline-none">
+                        <input id="chat-tag-ch" placeholder="Ch" class="w-12 text-[10px] p-2 bg-slate-50 border rounded-xl outline-none text-center">
+                    </div>
+                    <div class="flex gap-2">
+                        <input id="chat-msg" placeholder="Tulis komentar..." class="flex-1 bg-slate-100 p-4 rounded-2xl outline-none text-sm border focus:border-blue-300 transition-all">
+                        <button onclick="sendChat()" class="bg-blue-600 text-white w-14 h-14 rounded-2xl shadow-lg shadow-blue-200 active:scale-90 transition-transform"><i class="fa fa-paper-plane"></i></button>
+                    </div>`;
+            } else {
+                document.getElementById('profile-ui').innerHTML = `
+                    <div class="py-20 text-center">
+                        <i class="fa fa-user-circle text-6xl text-slate-100 mb-6"></i>
+                        <h2 class="text-xl font-black text-slate-400 mb-8">Belum Ada Akun Terdeteksi</h2>
+                        <button onclick="showPage('auth')" class="w-full bg-blue-600 text-white p-5 rounded-2xl font-black shadow-lg shadow-blue-100 uppercase tracking-widest">LOGIN / DAFTAR</button>
+                    </div>`;
+                document.getElementById('comm-input-area').innerHTML = `<button onclick="showPage('auth')" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest">MASUK UNTUK BERGABUNG DI FORUM</button>`;
+            }
+            showPage('home');
+        };
+
+        // Fungsi Panel Manager Tambahan
+        function openPanelManager(key) {
+            currentEditKey = key;
+            const sel = document.getElementById('sel-ch-edit');
+            sel.innerHTML = "";
+            db.ref('chapters/'+key).once('value', s => {
+                if(!s.exists()) return alert("Buat chapter dulu baru bisa kelola panel!");
+                s.forEach(ch => { sel.innerHTML += `<option value="${ch.key}">Chapter ${ch.key}</option>`; });
+                loadCurrentPanels();
+                document.getElementById('modal-edit-panels').classList.remove('hidden');
+            });
+            sel.onchange = loadCurrentPanels;
+        }
+
+        function loadCurrentPanels() {
+            const ch = document.getElementById('sel-ch-edit').value;
+            const list = document.getElementById('current-panels-list');
+            list.innerHTML = "<p class='text-[10px] text-slate-300'>Loading...</p>";
+            db.ref(`chapters/${currentEditKey}/${ch}/images`).on('value', s => {
+                list.innerHTML = "";
+                if(s.exists()) {
+                    s.val().forEach((img, index) => {
+                        list.innerHTML += `<div class="relative group">
+                            <img src="${img}" class="w-full h-16 object-cover rounded border">
+                            <button onclick="deletePanel(${index})" class="absolute -top-1 -right-1 bg-red-500 text-white w-4 h-4 rounded-full text-[8px] shadow-lg">×</button>
+                        </div>`;
+                    });
+                }
+            });
+        }
+
+        async function addOnePanel() {
+            const file = document.getElementById('single-ch-file').files[0];
+            const chNum = document.getElementById('sel-ch-edit').value;
+            const status = document.getElementById('add-status');
+            if(!file) return;
+            status.innerText = "UPLOADING...";
+            const form = new FormData(); form.append('file', file); form.append('upload_preset', "komikNest");
+            const res = await fetch(`https://api.cloudinary.com/v1_1/denbqcfi5/image/upload`, { method: 'POST', body: form });
+            const cloud = await res.json();
+            const chRef = db.ref(`chapters/${currentEditKey}/${chNum}/images`);
+            chRef.once('value', s => {
+                let images = s.exists() ? s.val() : [];
+                images.push(cloud.secure_url);
+                chRef.set(images);
+                status.innerText = "BERHASIL!";
+                setTimeout(() => status.innerText = "TAMBAH PANEL SATUAN", 2000);
+            });
+        }
+
+        function deletePanel(index) {
+            const chNum = document.getElementById('sel-ch-edit').value;
+            const chRef = db.ref(`chapters/${currentEditKey}/${chNum}/images`);
+            chRef.once('value', s => {
+                let images = s.val(); images.splice(index, 1);
+                chRef.set(images);
+            });
+        }
+
+        function doSearch() {
+            const val = document.getElementById('search-input').value.toLowerCase();
+            const container = document.getElementById('search-results');
+            const home = document.getElementById('home-content');
+            if(!val) { container.classList.add('hidden'); home.classList.remove('hidden'); return; }
+            container.innerHTML = ""; container.classList.remove('hidden'); home.classList.add('hidden');
+            allManga.filter(m => m.title.toLowerCase().includes(val)).forEach(m => {
+                container.innerHTML += `
+                    <div class="manga-card" onclick="openDetail('${m.key}')">
+                        <img src="${m.cover}" class="w-full h-56 object-cover bg-slate-100">
+                        <div class="p-2">
+                            <h3 class="font-bold text-[11px] truncate uppercase">${m.title}</h3>
+                            <p class="text-[10px] text-slate-400 mt-1">${m.type} • ⭐ 9.5</p>
+                        </div>
+                    </div>`;
+            });
+        }
+    </script>
+</body>
+</html>
